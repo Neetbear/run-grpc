@@ -4,7 +4,7 @@ import (
 	"context"
 	"io"
 	"log"
-	pb "run-grpc/proto"
+	pb "run-grpc/pkg"
 )
 
 func callSayHelloServerStream(client pb.GreetServiceClient, names *pb.NamesList) {

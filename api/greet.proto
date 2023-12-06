@@ -1,11 +1,19 @@
 syntax = "proto3";
 
-option go_package = "./proto";
-
 package greet_service;
 
+option go_package = "/api/";
+
+import "google/api/annotations.proto";
+import "validate/validate.proto";
+
 service GreetService {
-  rpc SayHello (NoParam) returns (HelloResponse);
+  rpc SayHello (NoParam) returns (HelloResponse) {
+    option (google.api.http) = {
+      get: "/sayHello"
+      // body: "*"
+    };
+  }
 
   rpc SayHelloServerStreaming(NamesList) returns (stream HelloResponse);
 
@@ -14,10 +22,12 @@ service GreetService {
   rpc SayHelloBidirectionalStreaming(stream HelloRequest) returns (stream HelloResponse);
 }
 
-message NoParam {};
+message NoParam {
+
+}
 
 message HelloRequest{
-  string name = 1;
+  string name = 1 [(validate.rules).string = {min_len:3, max_len:10}];
 }
 
 message HelloResponse {

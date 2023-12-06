@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	pb "run-grpc/proto"
+	pb "run-grpc/pkg"
 )
 
 func (s *helloServer) SayHello(ctx context.Context, req *pb.NoParam) (*pb.HelloResponse, error) {

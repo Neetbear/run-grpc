@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"log"
-	pb "run-grpc/proto"
+	pb "run-grpc/pkg"
 	"time"
 )
 

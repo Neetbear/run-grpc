@@ -3,7 +3,7 @@ package main
 import (
 	"io"
 	"log"
-	pb "run-grpc/proto"
+	pb "run-grpc/pkg"
 )
 
 func (s *helloServer) SayHelloBidirectionalStreaming(stream pb.GreetService_SayHelloBidirectionalStreamingServer) error {

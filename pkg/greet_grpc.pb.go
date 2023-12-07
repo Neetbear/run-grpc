@@ -4,7 +4,7 @@
 // - protoc             (unknown)
 // source: greet.proto
 
-package api
+package pkg
 
 import (
 	context "context"
@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion7
 
 const (
 	GreetService_SayHello_FullMethodName                       = "/greet_service.GreetService/SayHello"
+	GreetService_SayHelloServer_FullMethodName                 = "/greet_service.GreetService/SayHelloServer"
 	GreetService_SayHelloServerStreaming_FullMethodName        = "/greet_service.GreetService/SayHelloServerStreaming"
 	GreetService_SayHelloClientStreaming_FullMethodName        = "/greet_service.GreetService/SayHelloClientStreaming"
 	GreetService_SayHelloBidirectionalStreaming_FullMethodName = "/greet_service.GreetService/SayHelloBidirectionalStreaming"
@@ -30,6 +31,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type GreetServiceClient interface {
 	SayHello(ctx context.Context, in *NoParam, opts ...grpc.CallOption) (*HelloResponse, error)
+	SayHelloServer(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloResponse, error)
 	SayHelloServerStreaming(ctx context.Context, in *NamesList, opts ...grpc.CallOption) (GreetService_SayHelloServerStreamingClient, error)
 	SayHelloClientStreaming(ctx context.Context, opts ...grpc.CallOption) (GreetService_SayHelloClientStreamingClient, error)
 	SayHelloBidirectionalStreaming(ctx context.Context, opts ...grpc.CallOption) (GreetService_SayHelloBidirectionalStreamingClient, error)
@@ -46,6 +48,15 @@ func NewGreetServiceClient(cc grpc.ClientConnInterface) GreetServiceClient {
 func (c *greetServiceClient) SayHello(ctx context.Context, in *NoParam, opts ...grpc.CallOption) (*HelloResponse, error) {
 	out := new(HelloResponse)
 	err := c.cc.Invoke(ctx, GreetService_SayHello_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *greetServiceClient) SayHelloServer(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloResponse, error) {
+	out := new(HelloResponse)
+	err := c.cc.Invoke(ctx, GreetService_SayHelloServer_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -154,6 +165,7 @@ func (x *greetServiceSayHelloBidirectionalStreamingClient) Recv() (*HelloRespons
 // for forward compatibility
 type GreetServiceServer interface {
 	SayHello(context.Context, *NoParam) (*HelloResponse, error)
+	SayHelloServer(context.Context, *HelloRequest) (*HelloResponse, error)
 	SayHelloServerStreaming(*NamesList, GreetService_SayHelloServerStreamingServer) error
 	SayHelloClientStreaming(GreetService_SayHelloClientStreamingServer) error
 	SayHelloBidirectionalStreaming(GreetService_SayHelloBidirectionalStreamingServer) error
@@ -166,6 +178,9 @@ type UnimplementedGreetServiceServer struct {
 
 func (UnimplementedGreetServiceServer) SayHello(context.Context, *NoParam) (*HelloResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SayHello not implemented")
+}
+func (UnimplementedGreetServiceServer) SayHelloServer(context.Context, *HelloRequest) (*HelloResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SayHelloServer not implemented")
 }
 func (UnimplementedGreetServiceServer) SayHelloServerStreaming(*NamesList, GreetService_SayHelloServerStreamingServer) error {
 	return status.Errorf(codes.Unimplemented, "method SayHelloServerStreaming not implemented")
@@ -203,6 +218,24 @@ func _GreetService_SayHello_Handler(srv interface{}, ctx context.Context, dec fu
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(GreetServiceServer).SayHello(ctx, req.(*NoParam))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _GreetService_SayHelloServer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(HelloRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GreetServiceServer).SayHelloServer(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: GreetService_SayHelloServer_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GreetServiceServer).SayHelloServer(ctx, req.(*HelloRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -290,6 +323,10 @@ var GreetService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SayHello",
 			Handler:    _GreetService_SayHello_Handler,
+		},
+		{
+			MethodName: "SayHelloServer",
+			Handler:    _GreetService_SayHelloServer_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

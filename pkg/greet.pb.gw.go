@@ -2,11 +2,11 @@
 // source: greet.proto
 
 /*
-Package api is a reverse proxy.
+Package pkg is a reverse proxy.
 
 It translates gRPC into RESTful JSON APIs.
 */
-package api
+package pkg
 
 import (
 	"context"
@@ -45,6 +45,40 @@ func local_request_GreetService_SayHello_0(ctx context.Context, marshaler runtim
 	var metadata runtime.ServerMetadata
 
 	msg, err := server.SayHello(ctx, &protoReq)
+	return msg, metadata, err
+
+}
+
+func request_GreetService_SayHelloServer_0(ctx context.Context, marshaler runtime.Marshaler, client GreetServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq HelloRequest
+	var metadata runtime.ServerMetadata
+
+	newReader, berr := utilities.IOReaderFactory(req.Body)
+	if berr != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", berr)
+	}
+	if err := marshaler.NewDecoder(newReader()).Decode(&protoReq); err != nil && err != io.EOF {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+
+	msg, err := client.SayHelloServer(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+
+}
+
+func local_request_GreetService_SayHelloServer_0(ctx context.Context, marshaler runtime.Marshaler, server GreetServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq HelloRequest
+	var metadata runtime.ServerMetadata
+
+	newReader, berr := utilities.IOReaderFactory(req.Body)
+	if berr != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", berr)
+	}
+	if err := marshaler.NewDecoder(newReader()).Decode(&protoReq); err != nil && err != io.EOF {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+
+	msg, err := server.SayHelloServer(ctx, &protoReq)
 	return msg, metadata, err
 
 }
@@ -192,6 +226,31 @@ func RegisterGreetServiceHandlerServer(ctx context.Context, mux *runtime.ServeMu
 
 	})
 
+	mux.Handle("POST", pattern_GreetService_SayHelloServer_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		var err error
+		var annotatedContext context.Context
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/greet_service.GreetService/SayHelloServer", runtime.WithHTTPPathPattern("/sayHello/server"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_GreetService_SayHelloServer_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_GreetService_SayHelloServer_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
 	mux.Handle("POST", pattern_GreetService_SayHelloServerStreaming_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		err := status.Error(codes.Unimplemented, "streaming calls are not yet supported in the in-process transport")
 		_, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -276,6 +335,28 @@ func RegisterGreetServiceHandlerClient(ctx context.Context, mux *runtime.ServeMu
 
 	})
 
+	mux.Handle("POST", pattern_GreetService_SayHelloServer_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		var err error
+		var annotatedContext context.Context
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/greet_service.GreetService/SayHelloServer", runtime.WithHTTPPathPattern("/sayHello/server"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_GreetService_SayHelloServer_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_GreetService_SayHelloServer_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
 	mux.Handle("POST", pattern_GreetService_SayHelloServerStreaming_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
@@ -348,6 +429,8 @@ func RegisterGreetServiceHandlerClient(ctx context.Context, mux *runtime.ServeMu
 var (
 	pattern_GreetService_SayHello_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"sayHello"}, ""))
 
+	pattern_GreetService_SayHelloServer_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"sayHello", "server"}, ""))
+
 	pattern_GreetService_SayHelloServerStreaming_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"greet_service.GreetService", "SayHelloServerStreaming"}, ""))
 
 	pattern_GreetService_SayHelloClientStreaming_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"greet_service.GreetService", "SayHelloClientStreaming"}, ""))
@@ -357,6 +440,8 @@ var (
 
 var (
 	forward_GreetService_SayHello_0 = runtime.ForwardResponseMessage
+
+	forward_GreetService_SayHelloServer_0 = runtime.ForwardResponseMessage
 
 	forward_GreetService_SayHelloServerStreaming_0 = runtime.ForwardResponseStream
 

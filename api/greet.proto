@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package greet_service;
 
-option go_package = "/api/";
+option go_package = "/pkg";
 
 import "google/api/annotations.proto";
 import "validate/validate.proto";
@@ -12,6 +12,13 @@ service GreetService {
     option (google.api.http) = {
       get: "/sayHello"
       // body: "*"
+    };
+  }
+
+  rpc SayHelloServer(HelloRequest) returns (HelloResponse) {
+    option (google.api.http) = {
+      post: "/sayHello/server"
+      body: "*"
     };
   }
 
@@ -35,7 +42,7 @@ message HelloResponse {
 }
 
 message NamesList{
-  repeated string names = 1;
+  repeated string names = 1 [(validate.rules).repeated.min_items = 3];
 }
 
 message MessagesList{

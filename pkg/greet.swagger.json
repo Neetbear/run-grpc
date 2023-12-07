@@ -37,9 +37,49 @@
           "GreetService"
         ]
       }
+    },
+    "/sayHello/server": {
+      "post": {
+        "operationId": "GreetService_SayHelloServer",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/greet_serviceHelloResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/greet_serviceHelloRequest"
+            }
+          }
+        ],
+        "tags": [
+          "GreetService"
+        ]
+      }
     }
   },
   "definitions": {
+    "greet_serviceHelloRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      }
+    },
     "greet_serviceHelloResponse": {
       "type": "object",
       "properties": {

@@ -97,22 +97,31 @@ if vscode ext error
 
 ## rpc type
 ### Unary RPC (단일 RPC)
-client -request-> server
+- simplest type of RPC
+- a single request & a single response \
+client -request-> server \
 client <-response- server
+- ex) authentication or data retrieval
 
 ### Server Streaming RPC (서버 스트리밍 RPC)
-client -request-> server
-client <-responses- server
-ex: download
+- a single request & multiple messages in response \
+client -request-> server \
+client <-response(messages)- server
+- client must wait for the server to send all of the messages before it can continue
+- ex) downloading files || returning the results of a database query
 
 ### Client Streaming RPC (클라이언트 스트리밍 RPC)
-client -requests-> server
+- multiple messages in request & a single response \
+client -request(messages)-> server \
 client <-response- server
-ex: upload
+- server must wait for the client to send all of the messages before it can send a response
+- ex) uploading files || inserting multiple records into a database
 
 ### Bidirectional Streaming RPC (양방향 스트리밍 RPC)
-client <-> server
-ex: chatting
+- client and server can send multiple messages to each other in either direction \
+client <-multiple messages-> server
+- client and server can continue sending messages until one of them closes the connection
+- ex) real-time data exchange (chat applications or streaming media)
 
 ## docs
 https://grpc.io/docs

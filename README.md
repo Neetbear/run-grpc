@@ -40,7 +40,9 @@ $ protoc -I . --grpc-gateway_out ./gen/ \
 ```
 
 ## mux
-mux port != grpc port
+https://pkg.go.dev/github.com/gorilla/mux#section-readme \
+mux for gateway server \
+mux port != grpc port 
 
 ## buf cli
 ``` console
@@ -50,7 +52,6 @@ $ buf --help
 
 ## grpc-gateway
 Proxy tool that converts Protocol Buffers and gRPC services into HTTP JSON endpoints.
-
 ``` console
 $ go install \
     github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway \

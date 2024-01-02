@@ -94,3 +94,27 @@ if vscode ext error
     ]
 }
 ```
+
+## rpc type
+### Unary RPC (단일 RPC)
+client -request-> server
+client <-response- server
+
+### Server Streaming RPC (서버 스트리밍 RPC)
+client -request-> server
+client <-responses- server
+ex: download
+
+### Client Streaming RPC (클라이언트 스트리밍 RPC)
+client -requests-> server
+client <-response- server
+ex: upload
+
+### Bidirectional Streaming RPC (양방향 스트리밍 RPC)
+client <-> server
+ex: chatting
+
+## docs
+https://grpc.io/docs
+https://grpc-ecosystem.github.io/grpc-gateway
+https://buf.build/docs
